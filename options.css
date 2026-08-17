@@ -1,0 +1,624 @@
+/* options.css */
+
+.shell {
+  display: grid;
+  grid-template-columns: 236px 1fr;
+  min-height: 100vh;
+}
+
+/* ------------------------------- Sidebar -------------------------------- */
+
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border-soft);
+  display: flex;
+  flex-direction: column;
+  padding: 18px 0 16px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 18px 18px;
+  border-bottom: 1px solid var(--border-soft);
+  margin-bottom: 14px;
+}
+
+.sidebar-title {
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+
+.sidebar-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 0 0 4px;
+  flex: 1;
+}
+
+/* Vertical folder-tab navigation: each item is a tab on the edge of a
+   drawer. The active tab is pulled out to the right and lit up. */
+.nav-tab {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 10px 18px 10px 22px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  margin-right: -1px;
+  transition: background 0.15s ease, color 0.15s ease, padding-left 0.15s ease;
+}
+
+.nav-tab-icon {
+  font-size: 14px;
+  width: 16px;
+  text-align: center;
+}
+
+.nav-tab:hover {
+  background: var(--surface-2);
+  color: var(--text);
+  padding-left: 26px;
+}
+
+.nav-tab.is-active {
+  background: var(--bg);
+  color: var(--accent-strong);
+  border-color: var(--border-soft);
+  border-right-color: var(--bg);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.sidebar-footer {
+  padding: 14px 18px 0;
+  border-top: 1px solid var(--border-soft);
+  margin-top: 14px;
+}
+
+.privacy-note {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin: 12px 0 0;
+  line-height: 1.5;
+}
+
+.power {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.power-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 22%, transparent);
+}
+.power[data-off] .power-dot {
+  background: var(--text-faint);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--text-faint) 15%, transparent);
+}
+
+.power span:nth-child(2) {
+  flex: 1;
+}
+
+/* ------------------------------- Content -------------------------------- */
+
+.content {
+  padding: 32px 40px 60px;
+  max-width: 980px;
+}
+
+.panel-head {
+  margin-bottom: 22px;
+}
+
+.panel-head--row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.panel-head h1 {
+  font-size: 22px;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+
+.panel-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+.card-head {
+  padding: 14px 16px 0;
+}
+
+.card-body {
+  padding: 14px 18px 18px;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: 16px 18px;
+}
+
+.stat-card .stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  font-family: ui-monospace, "SFMono-Regular", "Cascadia Code", Menlo, Consolas, monospace;
+  letter-spacing: -0.02em;
+}
+
+.stat-card .stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 16px;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 34px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 12.5px;
+}
+
+.bar-row .bar-label {
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bar-track {
+  height: 8px;
+  background: var(--surface-3);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.source-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 0;
+  font-size: 12.5px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.source-row:last-child {
+  border-bottom: none;
+}
+.source-row .count {
+  font-family: ui-monospace, monospace;
+  color: var(--text-muted);
+}
+
+/* -------------------------------- Rules --------------------------------- */
+
+.rule-group {
+  margin-bottom: 26px;
+}
+
+.rule-group-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  margin: 0 0 10px;
+}
+
+.rule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rule-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+}
+
+.rule-row.is-disabled {
+  opacity: 0.55;
+}
+
+.rule-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rule-name {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 3px;
+}
+
+.rule-summary {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: ui-monospace, "SFMono-Regular", "Cascadia Code", Menlo, Consolas, monospace;
+}
+
+.rule-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ---------------------------- Folder mapping ----------------------------- */
+
+.folder-map-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.folder-map-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1.4fr 40px;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.folder-map-row:last-child {
+  border-bottom: none;
+}
+
+.folder-map-row--head {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  font-weight: 700;
+  padding-top: 14px;
+}
+
+/* ------------------------------- History --------------------------------- */
+
+.history-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.chip-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.chip:hover {
+  background: var(--surface-2);
+}
+.chip--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.history-day {
+  margin-bottom: 18px;
+}
+
+.history-day-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  margin: 0 0 8px;
+}
+
+.history-row {
+  display: grid;
+  grid-template-columns: 22px 1.4fr 1fr 1fr 70px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+  font-size: 12.5px;
+}
+
+.history-row .h-name {
+  font-family: ui-monospace, "SFMono-Regular", "Cascadia Code", Menlo, Consolas, monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-row .h-time {
+  color: var(--text-faint);
+  text-align: right;
+  font-size: 11.5px;
+}
+
+/* ------------------------------- Settings --------------------------------- */
+
+.settings-card {
+  margin-bottom: 16px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.setting-row:last-child {
+  border-bottom: none;
+}
+
+.setting-label {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.setting-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  max-width: 46ch;
+}
+
+.input {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 13px;
+}
+.input:focus {
+  border-color: var(--accent);
+}
+
+.select {
+  min-width: 180px;
+}
+
+.input--number {
+  width: 100px;
+}
+
+/* -------------------------------- Modal ----------------------------------- */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 16, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 50;
+  animation: fade-in 0.15s ease;
+}
+
+/* [hidden] and .modal-overlay have equal specificity, so without this rule
+   the display:flex above wins and the modal never actually hides. */
+.modal-overlay[hidden] {
+  display: none;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  width: 100%;
+  max-width: 520px;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.5);
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.modal-head h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.modal-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rule-clause {
+  display: flex;
+  gap: 14px;
+}
+
+.clause-label {
+  flex-shrink: 0;
+  width: 52px;
+  padding-top: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--accent-strong);
+}
+
+.clause-fields {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  flex: 1;
+  min-width: 160px;
+}
+
+.field--wide {
+  flex-basis: 100%;
+}
+
+.modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--border-soft);
+}
+
+/* -------------------------------- Toast ------------------------------------ */
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: 600;
+  box-shadow: var(--shadow-soft);
+  z-index: 60;
+  animation: toast-in 0.18s ease;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@media (max-width: 860px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: relative;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    padding: 12px;
+  }
+  .sidebar-brand, .sidebar-footer {
+    display: none;
+  }
+  .sidebar-nav {
+    flex-direction: row;
+    padding: 0;
+  }
+  .content {
+    padding: 20px;
+  }
+  .two-col, .stat-row {
+    grid-template-columns: 1fr;
+  }
+  .history-row {
+    grid-template-columns: 18px 1fr;
+    row-gap: 4px;
+  }
+  .history-row .h-time, .history-row .h-folder, .history-row .h-source {
+    grid-column: 2;
+  }
+}
