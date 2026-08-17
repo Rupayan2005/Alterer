@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SmartSort — Dashboard</title>
+<link rel="stylesheet" href="theme.css" />
+<link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <svg width="28" height="28" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+          <rect x="1" y="1" width="24" height="24" rx="6" fill="var(--surface-3)" stroke="var(--border)"/>
+          <path d="M5 10.5h6.2l1.1 1.6H21v6.4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8z" fill="var(--accent)"/>
+          <path d="M13 6.2l3.6 3.6M16.6 6.2l-3.6 3.6" stroke="var(--teal)" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <div class="sidebar-title">SmartSort</div>
+          <div class="sidebar-sub">Downloads Organizer</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebar-nav" aria-label="Dashboard sections">
+        <button class="nav-tab" data-section="overview" type="button">
+          <span class="nav-tab-icon">&#128202;</span> Overview
+        </button>
+        <button class="nav-tab" data-section="rules" type="button">
+          <span class="nav-tab-icon">&#129504;</span> Rules
+        </button>
+        <button class="nav-tab" data-section="folders" type="button">
+          <span class="nav-tab-icon">&#128193;</span> Folder Mapping
+        </button>
+        <button class="nav-tab" data-section="history" type="button">
+          <span class="nav-tab-icon">&#128337;</span> History
+        </button>
+        <button class="nav-tab" data-section="settings" type="button">
+          <span class="nav-tab-icon">&#9881;&#65039;</span> Settings
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <label class="power" id="power-toggle">
+          <span class="power-dot" id="power-dot" aria-hidden="true"></span>
+          <span id="power-label">Organizer On</span>
+          <span class="switch">
+            <input type="checkbox" id="power-checkbox" checked />
+            <span class="switch-track"></span>
+          </span>
+        </label>
+        <p class="privacy-note">Everything stays on this device. No account, no backend, no data ever leaves your browser.</p>
+      </div>
+    </aside>
+
+    <main class="content scrollbar-thin" id="content">
+
+      <!-- ============================= OVERVIEW ============================= -->
+      <section class="panel" id="panel-overview" data-panel>
+        <div class="panel-head">
+          <h1>Overview</h1>
+          <p class="panel-desc">A quick look at what SmartSort has organized.</p>
+        </div>
+
+        <div class="stat-row" id="stat-row">
+          <div class="stat-card skeleton" style="height:84px"></div>
+          <div class="stat-card skeleton" style="height:84px"></div>
+          <div class="stat-card skeleton" style="height:84px"></div>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="card-head">
+              <span class="folder-tab folder-tab--active">Files by category</span>
+            </div>
+            <div class="card-body" id="category-bars">
+              <div class="skeleton" style="height:120px"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="folder-tab folder-tab--active">Top sources</span>
+            </div>
+            <div class="card-body" id="source-list">
+              <div class="skeleton" style="height:120px"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== RULES ============================== -->
+      <section class="panel" id="panel-rules" data-panel hidden>
+        <div class="panel-head panel-head--row">
+          <div>
+            <h1>Rules</h1>
+            <p class="panel-desc">Website-specific rule always beats a generic file-type rule.</p>
+          </div>
+          <button class="btn btn--primary" id="btn-add-rule" type="button">+ Add Rule</button>
+        </div>
+
+        <div class="rule-group">
+          <h2 class="rule-group-title">Built-in site rules</h2>
+          <div id="site-rules-list" class="rule-list"></div>
+        </div>
+
+        <div class="rule-group">
+          <h2 class="rule-group-title">Your rules</h2>
+          <div id="custom-rules-list" class="rule-list"></div>
+        </div>
+      </section>
+
+      <!-- ============================ FOLDERS =============================== -->
+      <section class="panel" id="panel-folders" data-panel hidden>
+        <div class="panel-head panel-head--row">
+          <div>
+            <h1>Folder Mapping</h1>
+            <p class="panel-desc">Default destinations by file extension. Editable, and only used when no rule matches.</p>
+          </div>
+          <button class="btn btn--primary" id="btn-add-mapping" type="button">+ Add Mapping</button>
+        </div>
+
+        <div class="card">
+          <div class="folder-map-table" id="folder-map-table">
+            <div class="folder-map-row folder-map-row--head">
+              <span>Extensions</span>
+              <span>Folder</span>
+              <span></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================ HISTORY ================================ -->
+      <section class="panel" id="panel-history" data-panel hidden>
+        <div class="panel-head panel-head--row">
+          <div>
+            <h1>History</h1>
+            <p class="panel-desc">Everything SmartSort has organized, kept locally.</p>
+          </div>
+          <button class="btn btn--danger" id="btn-clear-history" type="button">Clear History</button>
+        </div>
+
+        <div class="history-controls">
+          <input type="search" id="history-search" class="input" placeholder="Search downloads..." />
+          <div class="chip-row" id="time-chips">
+            <button class="chip chip--active" data-timeframe="all" type="button">All time</button>
+            <button class="chip" data-timeframe="today" type="button">Today</button>
+            <button class="chip" data-timeframe="week" type="button">This week</button>
+            <button class="chip" data-timeframe="month" type="button">This month</button>
+          </div>
+          <div class="chip-row" id="category-chips">
+            <button class="chip chip--active" data-category="all" type="button">All</button>
+            <button class="chip" data-category="Images" type="button">Images</button>
+            <button class="chip" data-category="PDFs" type="button">PDFs</button>
+            <button class="chip" data-category="Videos" type="button">Videos</button>
+            <button class="chip" data-category="Code" type="button">Code</button>
+            <button class="chip" data-category="website" type="button">Website</button>
+          </div>
+        </div>
+
+        <div id="history-list" class="history-list"></div>
+      </section>
+
+      <!-- ============================ SETTINGS =============================== -->
+      <section class="panel" id="panel-settings" data-panel hidden>
+        <div class="panel-head">
+          <h1>Settings</h1>
+          <p class="panel-desc">Tune how SmartSort behaves.</p>
+        </div>
+
+        <div class="card settings-card">
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Organizer enabled</div>
+              <div class="setting-hint">Turn automatic organizing on or off entirely.</div>
+            </div>
+            <span class="switch">
+              <input type="checkbox" id="setting-enabled" />
+              <span class="switch-track"></span>
+            </span>
+          </div>
+
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Notifications</div>
+              <div class="setting-hint">Show a notification when a download is organized.</div>
+            </div>
+            <span class="switch">
+              <input type="checkbox" id="setting-notifications" />
+              <span class="switch-track"></span>
+            </span>
+          </div>
+
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Duplicate filenames</div>
+              <div class="setting-hint">How to handle a name that already exists in the destination folder.</div>
+            </div>
+            <select id="setting-duplicate" class="input select">
+              <option value="paren">dog (1).jpg</option>
+              <option value="underscore">dog_1.jpg</option>
+              <option value="keep-original">Keep original name</option>
+              <option value="overwrite">Overwrite existing file</option>
+            </select>
+          </div>
+
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Generated filename case</div>
+              <div class="setting-hint">Applies to filenames created from rename rules.</div>
+            </div>
+            <select id="setting-filename-style" class="input select">
+              <option value="preserve">Preserve as typed</option>
+              <option value="lowercase">Always lowercase</option>
+            </select>
+          </div>
+
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Max filename length</div>
+              <div class="setting-hint">Long generated names are truncated safely, keeping the extension.</div>
+            </div>
+            <input type="number" id="setting-max-length" class="input input--number" min="20" max="255" step="1" />
+          </div>
+
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Appearance</div>
+              <div class="setting-hint">Match your system, or force light / dark.</div>
+            </div>
+            <select id="setting-theme" class="input select">
+              <option value="system">System</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card settings-card">
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Reset to defaults</div>
+              <div class="setting-hint">Restores default rules and folder mapping. History is kept.</div>
+            </div>
+            <button class="btn" id="btn-reset-defaults" type="button">Reset</button>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Erase all SmartSort data</div>
+              <div class="setting-hint">Clears settings, rules, and history on this device.</div>
+            </div>
+            <button class="btn btn--danger" id="btn-erase-all" type="button">Erase everything</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ============================ RULE BUILDER MODAL ============================ -->
+  <div class="modal-overlay" id="rule-modal-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="rule-modal-title">
+      <div class="modal-head">
+        <h2 id="rule-modal-title">New Rule</h2>
+        <button class="btn btn--ghost btn--sm" id="rule-modal-close" type="button" aria-label="Close">&#10005;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="rule-clause">
+          <span class="clause-label">WHEN</span>
+          <div class="clause-fields">
+            <label class="field">
+              <span>Website</span>
+              <select id="rule-source" class="input select">
+                <option value="any">Any website</option>
+                <option value="google">Google Images</option>
+                <option value="youtube">YouTube</option>
+                <option value="github">GitHub</option>
+                <option value="leetcode">LeetCode</option>
+                <option value="reddit">Reddit</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Specific domain (optional)</span>
+              <input type="text" id="rule-domain" class="input" placeholder="e.g. drive.google.com" />
+            </label>
+          </div>
+        </div>
+
+        <div class="rule-clause">
+          <span class="clause-label">AND</span>
+          <div class="clause-fields">
+            <label class="field field--wide">
+              <span>File type(s) — comma separated, optional</span>
+              <input type="text" id="rule-extensions" class="input" placeholder="e.g. jpg, png, webp" />
+            </label>
+          </div>
+        </div>
+
+        <div class="rule-clause">
+          <span class="clause-label">THEN</span>
+          <div class="clause-fields">
+            <label class="field">
+              <span>Rename using</span>
+              <select id="rule-rename" class="input select">
+                <option value="keep">Keep original name</option>
+                <option value="query">Search query</option>
+                <option value="title">Page / video title</option>
+                <option value="repository">Repository name</option>
+                <option value="domain-date">Domain + date</option>
+                <option value="original">Original filename</option>
+                <option value="custom">Custom template&hellip;</option>
+              </select>
+            </label>
+            <label class="field field--wide" id="rule-template-wrap" hidden>
+              <span>Template</span>
+              <input type="text" id="rule-template" class="input mono" placeholder="{query}_{index}.{ext}" />
+            </label>
+            <label class="field field--wide">
+              <span>Save to folder</span>
+              <input type="text" id="rule-folder" class="input" placeholder="e.g. Images/Google" />
+            </label>
+            <label class="field">
+              <span>Rule name</span>
+              <input type="text" id="rule-name" class="input" placeholder="e.g. College Portal PDFs" />
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-foot">
+        <button class="btn" id="rule-cancel" type="button">Cancel</button>
+        <button class="btn btn--primary" id="rule-save" type="button">Save Rule</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

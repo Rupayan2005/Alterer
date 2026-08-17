@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SmartSort</title>
+<link rel="stylesheet" href="theme.css" />
+<link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="popup">
+    <header class="popup-header">
+      <div class="brand">
+        <svg class="brand-mark" width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+          <rect x="1" y="1" width="24" height="24" rx="6" fill="var(--surface-3)" stroke="var(--border)"/>
+          <path d="M5 10.5h6.2l1.1 1.6H21v6.4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8z" fill="var(--accent)"/>
+          <path d="M13 6.2l3.6 3.6M16.6 6.2l-3.6 3.6" stroke="var(--teal)" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <div class="brand-text">
+          <span class="brand-name">SmartSort</span>
+          <span class="brand-sub">Downloads Organizer</span>
+        </div>
+      </div>
+      <label class="power" id="power-toggle" title="Turn organizing on or off">
+        <span class="power-dot" id="power-dot" aria-hidden="true"></span>
+        <span class="power-label" id="power-label">On</span>
+        <span class="switch">
+          <input type="checkbox" id="power-checkbox" checked />
+          <span class="switch-track"></span>
+        </span>
+      </label>
+    </header>
+
+    <div class="popup-body scrollbar-thin" id="popup-body">
+      <div class="section-head">
+        <span class="folder-tab folder-tab--active" id="today-tab">Today</span>
+        <span class="today-count" id="today-count">—</span>
+      </div>
+
+      <div id="recent-list" class="recent-list" aria-live="polite">
+        <!-- populated by popup.js: loading skeletons, empty state, or entries -->
+      </div>
+
+      <div id="error-banner" class="error-banner" hidden>
+        <span>&#9888;</span>
+        <span id="error-text">Something went wrong loading your activity.</span>
+      </div>
+    </div>
+
+    <footer class="popup-footer">
+      <button class="btn btn--sm" id="btn-history" type="button">View History</button>
+      <button class="btn btn--sm btn--primary" id="btn-settings" type="button">Settings</button>
+    </footer>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
