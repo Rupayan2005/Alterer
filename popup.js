@@ -32,7 +32,7 @@ function renderEmpty() {
   wrap.innerHTML = `
     <div class="glyph">\u{1F4C2}</div>
     <div class="title">No downloads organized yet</div>
-    <div class="hint">Download something and SmartSort will sort it into place automatically.</div>
+    <div class="hint">Download something and Alterer will sort it into place automatically.</div>
   `;
   els.recentList.appendChild(wrap);
 }

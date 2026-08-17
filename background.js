@@ -45,7 +45,7 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
 // summary if downloads are arriving quickly (avoids spamming the user).
 // ---------------------------------------------------------------------------
 
-const NOTIF_ID = "smartsort-summary";
+const NOTIF_ID = "Alterer-summary";
 let burstCount = 0;
 let burstTimer = null;
 const BURST_WINDOW_MS = 12000;
@@ -62,7 +62,7 @@ async function notifyOrganized(filename, folder) {
   }, BURST_WINDOW_MS);
 
   if (burstCount <= BURST_THRESHOLD) {
-    chrome.notifications.create(`smartsort-${Date.now()}`, {
+    chrome.notifications.create(`Alterer-${Date.now()}`, {
       type: "basic",
       iconUrl: "assets/icons/icon128.png",
       title: "Download organized",
@@ -73,7 +73,7 @@ async function notifyOrganized(filename, folder) {
     chrome.notifications.create(NOTIF_ID, {
       type: "basic",
       iconUrl: "assets/icons/icon128.png",
-      title: "SmartSort",
+      title: "Alterer",
       message: `Organized ${burstCount} downloads so far`,
       priority: 0,
     });
@@ -104,6 +104,6 @@ chrome.downloads.onChanged.addListener((delta) => {
 
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
-    console.log("SmartSort installed. Everything runs locally — no data leaves your browser.");
+    console.log("Alterer installed. Everything runs locally — no data leaves your browser.");
   }
 });

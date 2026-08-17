@@ -620,7 +620,7 @@ document.getElementById("btn-reset-defaults").addEventListener("click", async ()
 });
 
 document.getElementById("btn-erase-all").addEventListener("click", async () => {
-  if (!confirm("This clears ALL SmartSort data on this device, including history. Continue?")) return;
+  if (!confirm("This clears ALL Alterer data on this device, including history. Continue?")) return;
   await chrome.storage.local.clear();
   await loadAll();
   showToast("All data erased");

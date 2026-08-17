@@ -181,7 +181,7 @@ export async function handleDeterminingFilename(downloadItem, suggest) {
     } catch {
       /* ignore */
     }
-    console.error("SmartSort: failed to plan download, using default filename.", err);
+    console.error("Alterer: failed to plan download, using default filename.", err);
   }
 }
 
