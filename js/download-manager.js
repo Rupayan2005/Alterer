@@ -2,11 +2,16 @@
 // Orchestrates the full pipeline described in the spec:
 //   capture event -> collect metadata -> resolve context -> detect source
 //   -> extract context -> rule engine -> sanitize -> duplicate check
-//   -> final path -> suggest to Chrome -> record history -> notify.
+//   -> final path -> suggest to Chrome -> (on actual completion) record history -> notify.
 //
 // Reliability rule: organizing must NEVER prevent a download from
 // completing. Every step here is wrapped so that any failure falls back
 // to "let Chrome use its default filename" rather than blocking anything.
+//
+// History is only ever written once Chrome confirms a download actually
+// completed (see finalizeDownload, called from background.js's
+// chrome.downloads.onChanged listener) — never at the moment the filename
+// is merely suggested, since the user can still cancel a Save As dialog.
 
 import {
   getSettings,
@@ -24,15 +29,16 @@ import { resolveUniqueName, markPathUsed } from "./duplicate-handler.js";
 import { joinDownloadPath, sanitizeFilenameBase } from "./sanitization.js";
 import { extensionFromFilename, domainFromUrl, baseNameWithoutExtension } from "./utilities.js";
 import { addHistoryEntry } from "./history.js";
+import { setPendingPlan, takePendingPlan, discardPendingPlan } from "./pending-downloads.js";
 
 /** Build the normalized DownloadContext object described in the spec. */
-function buildDownloadContext(downloadItem) {
+async function buildDownloadContext(downloadItem) {
   const originalFilename = downloadItem.filename || "";
   const ext = extensionFromFilename(originalFilename);
   const referrer = downloadItem.referrer || "";
   const url = downloadItem.url || downloadItem.finalUrl || "";
 
-  const tabContext = resolveDownloadContext({
+  const tabContext = await resolveDownloadContext({
     tabId: downloadItem.tabId,
     referrer,
     url,
@@ -77,8 +83,8 @@ function buildDownloadContext(downloadItem) {
 }
 
 /**
- * Compute the full plan for a download without touching Chrome APIs.
- * Pure(ish) and easy to reason about / unit test.
+ * Compute the full plan for a download without touching Chrome's
+ * suggest()/history APIs. Pure(ish) and easy to reason about / unit test.
  */
 export async function planDownload(downloadItem) {
   const [settings, folderMap, siteRules, customRules, usedPaths] = await Promise.all([
@@ -89,7 +95,7 @@ export async function planDownload(downloadItem) {
     getUsedPaths(),
   ]);
 
-  const context = buildDownloadContext(downloadItem);
+  const context = await buildDownloadContext(downloadItem);
   const ext = context.extension;
 
   const destination = resolveDestination({
@@ -152,6 +158,9 @@ export async function planDownload(downloadItem) {
 /**
  * Entry point called from the chrome.downloads.onDeterminingFilename
  * listener. Always resolves — never throws — and always calls `suggest`.
+ * Does NOT write to history: the download may still be cancelled by the
+ * user (e.g. a Save As dialog). The plan is stashed and only turned into
+ * a history entry by finalizeDownload() once the download truly completes.
  */
 export async function handleDeterminingFilename(downloadItem, suggest) {
   try {
@@ -166,14 +175,14 @@ export async function handleDeterminingFilename(downloadItem, suggest) {
 
     if (!plan.matched || !plan.relativePath) {
       suggest(); // no rule/folder matched: leave file in root Downloads, untouched
-      recordHistory(plan, false).catch(() => {});
+      await setPendingPlan(downloadItem.id, historySummary(plan, false));
       return;
     }
 
     suggest({ filename: plan.relativePath, conflictAction: "uniquify" });
     markPathUsed(plan.folder, plan.finalFilename);
     addUsedPath(`${plan.folder}/${plan.finalFilename}`.toLowerCase()).catch(() => {});
-    recordHistory(plan, true).catch(() => {});
+    await setPendingPlan(downloadItem.id, historySummary(plan, true));
   } catch (err) {
     // Absolute last resort: never block the download.
     try {
@@ -185,8 +194,26 @@ export async function handleDeterminingFilename(downloadItem, suggest) {
   }
 }
 
-async function recordHistory(plan, organized) {
-  await addHistoryEntry({
+/**
+ * Called from background.js when chrome.downloads.onChanged reports a
+ * download's state as "complete". Turns the stashed plan into a real
+ * history entry. If the download never completes (cancelled, interrupted,
+ * or the user picked "Save As" and clicked Cancel), this is simply never
+ * called for that id and nothing is ever written to history.
+ */
+export async function finalizeDownload(downloadId) {
+  const summary = await takePendingPlan(downloadId);
+  if (!summary) return;
+  await addHistoryEntry({ ...summary, timestamp: Date.now() });
+}
+
+/** Called when a download is interrupted/cancelled — discard without recording. */
+export async function discardDownload(downloadId) {
+  await discardPendingPlan(downloadId);
+}
+
+function historySummary(plan, organized) {
+  return {
     id: `hist_${plan.context.downloadId}_${Date.now()}`,
     downloadId: plan.context.downloadId,
     originalFilename: plan.context.originalFilename,
@@ -198,6 +225,5 @@ async function recordHistory(plan, organized) {
     matched: organized,
     renamed: plan.renamed,
     wasDuplicate: plan.wasDuplicate,
-    timestamp: Date.now(),
-  });
+  };
 }
