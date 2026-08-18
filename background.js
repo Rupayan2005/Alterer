@@ -4,40 +4,63 @@
 // requirements in the spec.
 
 import { recordNavigation, updateTabTitle, forgetTab } from "./js/context-tracker.js";
-import { handleDeterminingFilename } from "./js/download-manager.js";
+import { handleDeterminingFilename, finalizeDownload, discardDownload } from "./js/download-manager.js";
 import { getSettings } from "./js/storage.js";
 
 // ---------------------------------------------------------------------------
 // Context tracking: keep tab URL/title fresh so downloads can be associated
-// with the page that likely triggered them.
+// with the page that likely triggered them. These are async (persisted to
+// chrome.storage.session so they survive the service worker being suspended
+// and restarted) but the listeners themselves stay fire-and-forget.
 // ---------------------------------------------------------------------------
 
 chrome.webNavigation.onCompleted.addListener((details) => {
   if (details.frameId !== 0) return; // main frame only
   chrome.tabs.get(details.tabId, (tab) => {
     if (chrome.runtime.lastError || !tab) return;
-    recordNavigation(details.tabId, tab.url, tab.title);
+    recordNavigation(details.tabId, tab.url, tab.title).catch(() => {});
   });
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.title) {
-    updateTabTitle(tabId, changeInfo.title);
+    updateTabTitle(tabId, changeInfo.title).catch(() => {});
   } else if (changeInfo.url && tab.url) {
-    recordNavigation(tabId, tab.url, tab.title);
+    recordNavigation(tabId, tab.url, tab.title).catch(() => {});
   }
 });
 
-chrome.tabs.onRemoved.addListener((tabId) => forgetTab(tabId));
+chrome.tabs.onRemoved.addListener((tabId) => {
+  forgetTab(tabId).catch(() => {});
+});
 
 // ---------------------------------------------------------------------------
 // The core pipeline: suggest a relative filename/path while Chrome is
-// determining where a download should go.
+// determining where a download should go. This only plans and suggests —
+// it does not write to history yet, since the user can still cancel a
+// Save As dialog at this point.
 // ---------------------------------------------------------------------------
 
 chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
   handleDeterminingFilename(downloadItem, suggest);
   return true; // keep the channel open for the async suggest() call
+});
+
+// ---------------------------------------------------------------------------
+// History is only recorded once Chrome confirms a download actually
+// completed. If the user cancels the Save As dialog, or the download is
+// otherwise interrupted, nothing is ever written to history.
+// ---------------------------------------------------------------------------
+
+chrome.downloads.onChanged.addListener((delta) => {
+  if (!delta.state) return;
+
+  if (delta.state.current === "complete") {
+    finalizeDownload(delta.id).catch((err) => console.error("Alterer: finalize failed", err));
+    notifyIfOrganized(delta.id);
+  } else if (delta.state.current === "interrupted") {
+    discardDownload(delta.id).catch(() => {});
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -82,9 +105,8 @@ async function notifyOrganized(filename, folder) {
 
 // Fire a lightweight notification once a download actually completes, so we
 // only notify for downloads that really landed (not cancelled/interrupted).
-chrome.downloads.onChanged.addListener((delta) => {
-  if (!delta.state || delta.state.current !== "complete") return;
-  chrome.downloads.search({ id: delta.id }, async ([item]) => {
+function notifyIfOrganized(downloadId) {
+  chrome.downloads.search({ id: downloadId }, async ([item]) => {
     if (!item) return;
     const settings = await getSettings();
     if (!settings.organizerEnabled) return;
@@ -96,7 +118,7 @@ chrome.downloads.onChanged.addListener((delta) => {
     const folderGuess = parts[parts.length - 2];
     notifyOrganized(name, folderGuess);
   });
-});
+}
 
 // ---------------------------------------------------------------------------
 // Install/update bookkeeping.
